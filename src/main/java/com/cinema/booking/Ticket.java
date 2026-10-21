@@ -2,14 +2,12 @@ package com.cinema.booking;
 
 import com.cinema.catalog.MovieSession;
 import com.cinema.user.User;
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "tickets",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"session_id", "row_number", "seat_number"}))
+@Table(name = "tickets")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +27,9 @@ public class Ticket {
     @Column(name = "seat_number", nullable = false)
     private Integer seatNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private TicketStatus status;
 
     @Column(name = "hold_expires_at")
     private OffsetDateTime holdExpiresAt;
@@ -38,14 +37,23 @@ public class Ticket {
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
-    protected Ticket(){}
+    protected Ticket() {
+    }
 
-    private Ticket(MovieSession session, User user, Integer rowNumber, Integer seatNumber, String status){
+    private Ticket(MovieSession session, User user, Integer rowNumber, Integer seatNumber,
+                   TicketStatus status, OffsetDateTime holdExpiresAt) {
         this.session = session;
         this.user = user;
         this.rowNumber = rowNumber;
         this.seatNumber = seatNumber;
         this.status = status;
+        this.holdExpiresAt = holdExpiresAt;
+        this.createdAt = OffsetDateTime.now();
+    }
+
+    public static Ticket hold(MovieSession session, User user, Integer rowNumber, Integer seatNumber,
+                              OffsetDateTime holdExpiresAt) {
+        return new Ticket(session, user, rowNumber, seatNumber, TicketStatus.HOLD, holdExpiresAt);
     }
 
     public long getId() {
@@ -68,7 +76,7 @@ public class Ticket {
         return seatNumber;
     }
 
-    public String getStatus() {
+    public TicketStatus getStatus() {
         return status;
     }
 
@@ -80,11 +88,12 @@ public class Ticket {
         return createdAt;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void pay() {
+        this.status = TicketStatus.PAID;
+        this.holdExpiresAt = null;
     }
 
-    public void setHoldExpiresAt(OffsetDateTime holdExpiresAt) {
-        this.holdExpiresAt = holdExpiresAt;
+    public void expire() {
+        this.status = TicketStatus.EXPIRED;
     }
 }
