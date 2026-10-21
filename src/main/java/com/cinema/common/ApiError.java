@@ -1,4 +1,4 @@
-package com.cinema.catalog;
+package com.cinema.common;
 
 import java.time.OffsetDateTime;
 
