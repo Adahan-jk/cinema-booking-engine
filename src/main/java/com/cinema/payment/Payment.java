@@ -35,7 +35,7 @@ public class Payment {
         return new Payment(ticketId, amount, PaymentStatus.SUCCESS, transactionId, OffsetDateTime.now());
     }
 
-    public Payment(Long ticketId, BigDecimal amount, PaymentStatus status, String transactionId, OffsetDateTime createdAt) {
+    private Payment(Long ticketId, BigDecimal amount, PaymentStatus status, String transactionId, OffsetDateTime createdAt) {
         this.ticketId = ticketId;
         this.amount = amount;
         this.status = status;
