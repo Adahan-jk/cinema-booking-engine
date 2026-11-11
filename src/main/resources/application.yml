@@ -17,3 +17,6 @@ spring:
 app:
   booking:
     hold-ttl: PT10M
+  payment:
+    force-fail: false
+
